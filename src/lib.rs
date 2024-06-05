@@ -38,7 +38,7 @@ use ueberzug::{Scalers, UeConf, Ueberzug};
 #[derive(Debug)]
 pub struct Selthi<'a> {
     pub options: Vec<&'a str>,
-    pub images_path: Option<Vec<String>>,
+    pub images_path: Option<Vec<&'a str>>,
     pub message: &'a str,
     pub help_message: Option<&'a str>,
     pub page_size: usize,
@@ -95,7 +95,7 @@ impl<'a> Selthi<'a> {
 
     #[cfg(feature = "with_images")]
     /// Sets the images to show when selecting.
-    pub fn with_images(mut self, images_path: Vec<String>) -> Self {
+    pub fn with_images(mut self, images_path: Vec<&'a str>) -> Self {
         self.images_path = Some(images_path);
         self
     }
@@ -150,7 +150,7 @@ impl<'a> Selthi<'a> {
                     return;
                 }
 
-                let image_path = &images_path[current_option];
+                let image_path = images_path[current_option];
                 let (width, height) = size;
                 let img_width = width / 2;
                 let padding_right = 2;
