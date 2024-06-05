@@ -19,3 +19,10 @@ with_images = ["ueberzug"]
 [package.metadata.docs.rs]
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
+
+[[example]]
+name = "default"
+
+[[example]]
+name = "images"
+required-features = ["with_images"]
