@@ -6,7 +6,7 @@ author = "João Ribeiro"
 repository = "https://github.com/anotherlusitano/selthi"
 description = "A Rust library for building interactive prompts with or without images"
 license = "MIT"
-keywords = ["cli", "select", "prompt", "image", "terminal", "ueberzug"]
+keywords = ["cli", "prompt", "image", "terminal", "ueberzug"]
 
 [dependencies]
 crossterm = "0.27.0"
