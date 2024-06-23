@@ -37,5 +37,5 @@ cargo add selthi
 \* If you want to support images, add the feature `with_images`
 
 ```
-selthi = { version = "0.1.0", features = ["with_images"] }
+selthi = { version = "0.1.2", features = ["with_images"] }
 ```
