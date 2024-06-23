@@ -8,14 +8,15 @@
 [docs.rs]: https://docs.rs/selthi
 [license]: https://img.shields.io/crates/l/selthi.svg
 
-
 [selthi](https://github.com/anotherlusitano/selthi) is a library for building interactive prompts with or without images, inspired by [inquire](https://github.com/mikaelmello/inquire).
 
 It provides a prompt asking the user to select one option from a given list, with the ability to display images for each option
 
 ## Demo
 
-[demo](https://github.com/anotherlusitano/selthi/assets/108989500/3ff850bf-68e7-4dc9-acc3-513814135d55)
+![Animated GIF making a demonstration of this library](./assets/images.gif)
+
+[Source](./examples/images.rs)
 
 ## Examples
 
