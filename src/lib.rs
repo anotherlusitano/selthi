@@ -243,7 +243,7 @@ impl<'a> Selthi<'a> {
                                 quit = true
                             }
                         }
-                        _ => quit = true,
+                        _ => {}
                     },
 
                     _ => quit = true,
