@@ -43,6 +43,7 @@ pub struct Selthi<'a> {
     pub help_message: Option<&'a str>,
     pub page_size: usize,
     pub cursor_index: u16,
+    current_option: usize,
     pub vim_mode: bool,
 }
 
@@ -53,6 +54,7 @@ impl<'a> Selthi<'a> {
     // The default cursor start at 1
     // because of the message occupies 1 row
     pub const DEFAULT_STARTING_CURSOR: u16 = 1;
+    pub const DEFAULT_CURRENT_OPTION: usize = 0;
     pub const DEFAULT_HELP_MESSAGE: Option<&'a str> =
         Some("[Move with the arrows and click enter to select]");
 
@@ -65,6 +67,7 @@ impl<'a> Selthi<'a> {
             help_message: Self::DEFAULT_HELP_MESSAGE,
             page_size: Self::DEFAULT_PAGE_SIZE,
             cursor_index: Self::DEFAULT_STARTING_CURSOR,
+            current_option: Self::DEFAULT_CURRENT_OPTION,
             vim_mode: Self::DEFAULT_VIM_MODE,
         }
     }
@@ -139,18 +142,16 @@ impl<'a> Selthi<'a> {
     }
 
     #[cfg(feature = "with_images")]
-    fn draw_image(&self, ueberzug: &Ueberzug, size: (u16, u16), page_min: usize) {
+    fn draw_image(&self, ueberzug: &Ueberzug, size: (u16, u16)) {
         match &self.images_path {
             Some(images_path) => {
-                let current_option = self.cursor_index as usize - 1 + page_min - 1;
-
-                if current_option >= images_path.len() {
+                if self.current_option >= images_path.len() {
                     let last_image = &images_path[images_path.len() - 1];
                     ueberzug.clear(last_image);
                     return;
                 }
 
-                let image_path = images_path[current_option];
+                let image_path = images_path[self.current_option];
                 let (width, height) = size;
                 let img_width = width / 2;
                 let padding_right = 2;
@@ -192,7 +193,7 @@ impl<'a> Selthi<'a> {
         self.draw_options(&mut stdout, page);
 
         #[cfg(feature = "with_images")]
-        self.draw_image(&ueberzug, (width, height), page.0);
+        self.draw_image(&ueberzug, (width, height));
 
         while !quit {
             while poll(Duration::ZERO).unwrap() {
@@ -202,7 +203,7 @@ impl<'a> Selthi<'a> {
                         width = nw;
                         height = nh;
 
-                        self.draw_image(&ueberzug, (width, height), page.0);
+                        self.draw_image(&ueberzug, (width, height));
                     }
                     Event::Key(event) => match event.code {
                         KeyCode::Up => {
@@ -231,9 +232,7 @@ impl<'a> Selthi<'a> {
                             stdout.queue(cursor::MoveTo(0, 0)).unwrap();
                             terminal::disable_raw_mode().unwrap();
 
-                            // TODO: I don't like how this get the current option
-                            let current_option = self.cursor_index as usize - 1 + page.0 - 1;
-                            return Some(self.options[current_option]);
+                            return Some(self.options[self.current_option]);
                         }
                         KeyCode::Esc => {
                             quit = true;
@@ -249,7 +248,7 @@ impl<'a> Selthi<'a> {
                     _ => quit = true,
                 }
                 #[cfg(feature = "with_images")]
-                self.draw_image(&ueberzug, (width, height), page.0);
+                self.draw_image(&ueberzug, (width, height));
             }
             stdout.flush().unwrap();
             sleep(Duration::from_millis(33))
@@ -269,10 +268,12 @@ impl<'a> Selthi<'a> {
         if top_page_without_first_option {
             page.0 -= 1;
             page.1 -= 1;
+            self.current_option -= 1;
         } else if top_page {
             return self;
         } else {
             self.cursor_index -= 1;
+            self.current_option -= 1;
             stdout.queue(cursor::MoveTo(0, self.cursor_index)).unwrap();
         }
 
@@ -290,8 +291,10 @@ impl<'a> Selthi<'a> {
         if is_cursor_at_middle_page && are_there_more_options {
             page.0 += 1;
             page.1 += 1;
+            self.current_option += 1;
         } else {
             self.cursor_index += 1;
+            self.current_option += 1;
             stdout.queue(cursor::MoveTo(0, self.cursor_index)).unwrap();
         }
 
