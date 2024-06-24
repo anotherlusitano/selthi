@@ -145,21 +145,20 @@ impl<'a> Selthi<'a> {
     fn draw_image(&self, ueberzug: &Ueberzug, size: (u16, u16)) {
         match &self.images_path {
             Some(images_path) => {
-                if self.current_option >= images_path.len() {
-                    let last_image = &images_path[images_path.len() - 1];
-                    ueberzug.clear(last_image);
-                    return;
-                }
+                let last_image: usize = images_path.len() - 1;
+                let previous_option = self.current_option.saturating_sub(1);
+                let next_option = self.current_option.saturating_add(1).min(last_image);
+
+                let previous_image = images_path[previous_option];
+                let next_image = images_path[next_option];
 
                 let image_path = images_path[self.current_option];
                 let (width, height) = size;
                 let img_width = width / 2;
                 let padding_right = 2;
 
-                // HACK: it would be great if only clears the previous image instead of all the images
-                for image_identifier in images_path {
-                    ueberzug.clear(image_identifier)
-                }
+                ueberzug.clear(previous_image);
+                ueberzug.clear(next_image);
 
                 ueberzug.draw(&UeConf {
                     identifier: image_path,
