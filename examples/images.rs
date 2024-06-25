@@ -1,4 +1,4 @@
-use selthi::Selthi;
+use selthi::Select;
 
 fn main() {
     let options: Vec<&str> = vec!["Linux", "Windows", "macOS"];
@@ -8,7 +8,7 @@ fn main() {
         "./examples/images/macos.png",
     ];
 
-    let ans: Option<&str> = Selthi::new("What's your favorite operating system?", options)
+    let ans: Option<&str> = Select::new("What's your favorite operating system?", options)
         .with_images(images)
         .without_help_message()
         .prompt();
