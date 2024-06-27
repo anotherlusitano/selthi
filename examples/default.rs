@@ -1,4 +1,4 @@
-use selthi::Selthi;
+use selthi::Select;
 
 fn main() {
     let options: Vec<&str> = vec![
@@ -15,7 +15,7 @@ fn main() {
     ];
 
     let ans: Option<&str> =
-        Selthi::new("What's your favorite programming language?", options).prompt();
+        Select::new("What's your favorite programming language?", options).prompt();
 
     match ans {
         Some(language) => println!("{} rocks!", language),
