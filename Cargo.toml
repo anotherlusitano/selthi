@@ -24,5 +24,8 @@ rustdoc-args = ["--cfg", "docsrs"]
 name = "default"
 
 [[example]]
+name = "input"
+
+[[example]]
 name = "images"
 required-features = ["with_images"]
