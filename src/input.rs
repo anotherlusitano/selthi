@@ -29,14 +29,25 @@ use crossterm::{
 #[derive(Debug)]
 pub struct Input<'a> {
     pub message: &'a str,
+    pub minimum_chars: u16,
 }
 
 impl<'a> Input<'a> {
     pub const COLOR: Color = Color::Yellow;
+    pub const DEFAULT_MINIMUM_CHAR: u16 = 0;
 
     /// Creates an [Input] with the provided message.
     pub fn new(message: &'a str) -> Self {
-        Self { message }
+        Self {
+            message,
+            minimum_chars: Self::DEFAULT_MINIMUM_CHAR,
+        }
+    }
+
+    /// Sets the minimum number of characters required for the response.
+    pub fn with_minimum_chars(mut self, min_chars: u16) -> Self {
+        self.minimum_chars = min_chars;
+        self
     }
 
     /// Returns the string that the user typed.
@@ -58,12 +69,14 @@ impl<'a> Input<'a> {
                 match read().unwrap() {
                     Event::Key(event) => match event.code {
                         KeyCode::Enter => {
-                            stdout.queue(ResetColor).unwrap();
-                            stdout.queue(Clear(ClearType::All)).unwrap();
-                            stdout.queue(cursor::MoveTo(0, 0)).unwrap();
-                            terminal::disable_raw_mode().unwrap();
+                            if answer.len() as u16 >= self.minimum_chars {
+                                stdout.queue(ResetColor).unwrap();
+                                stdout.queue(Clear(ClearType::All)).unwrap();
+                                stdout.queue(cursor::MoveTo(0, 0)).unwrap();
+                                terminal::disable_raw_mode().unwrap();
 
-                            return Some(answer);
+                                return Some(answer);
+                            }
                         }
                         KeyCode::Esc => {
                             quit = true;
