@@ -150,7 +150,7 @@ impl<'a> Input<'a> {
 
         let cursor_pos = crossterm::cursor::position().unwrap().0;
 
-        let char_before_cursor = (cursor_pos - message_len).checked_sub(1).unwrap();
+        let char_before_cursor = (cursor_pos - message_len).saturating_sub(1);
 
         answer.insert(char_before_cursor as usize, ch);
     }
