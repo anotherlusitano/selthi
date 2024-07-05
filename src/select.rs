@@ -227,6 +227,7 @@ impl<'a> Select<'a> {
                         }
                         KeyCode::Enter => {
                             stdout.queue(ResetColor).unwrap();
+                            stdout.queue(SetCursorStyle::DefaultUserShape).unwrap();
                             stdout.queue(Clear(ClearType::All)).unwrap();
                             stdout.queue(cursor::MoveTo(0, 0)).unwrap();
                             terminal::disable_raw_mode().unwrap();
@@ -253,6 +254,7 @@ impl<'a> Select<'a> {
             sleep(Duration::from_millis(33))
         }
         stdout.queue(ResetColor).unwrap();
+        stdout.queue(SetCursorStyle::DefaultUserShape).unwrap();
         stdout.queue(Clear(ClearType::All)).unwrap();
         stdout.queue(cursor::MoveTo(0, 0)).unwrap();
         terminal::disable_raw_mode().unwrap();
