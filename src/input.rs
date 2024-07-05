@@ -69,13 +69,13 @@ impl<'a> Input<'a> {
                 match read().unwrap() {
                     Event::Key(event) => match event.code {
                         KeyCode::Enter => {
-                            if answer.len() as u16 >= self.minimum_chars {
+                            if answer.trim().len() as u16 >= self.minimum_chars {
                                 stdout.queue(ResetColor).unwrap();
                                 stdout.queue(Clear(ClearType::All)).unwrap();
                                 stdout.queue(cursor::MoveTo(0, 0)).unwrap();
                                 terminal::disable_raw_mode().unwrap();
 
-                                return Some(answer);
+                                return Some(answer.trim().to_string());
                             }
                         }
                         KeyCode::Esc => {
