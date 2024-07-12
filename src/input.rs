@@ -63,13 +63,13 @@ impl<'a> Input<'a> {
         while !quit {
             while poll(Duration::ZERO).unwrap() {
                 let space = 1;
-                let message_len = (self.message.len() + space) as u16;
+                let message_len = (self.message.chars().count() + space) as u16;
                 let cursor_pos = crossterm::cursor::position().unwrap().0;
 
                 match read().unwrap() {
                     Event::Key(event) => match event.code {
                         KeyCode::Enter => {
-                            if answer.trim().len() as u16 >= self.minimum_chars {
+                            if answer.trim().chars().count() as u16 >= self.minimum_chars {
                                 stdout.queue(ResetColor).unwrap();
                                 stdout.queue(Clear(ClearType::All)).unwrap();
                                 stdout.queue(cursor::MoveTo(0, 0)).unwrap();
@@ -87,7 +87,7 @@ impl<'a> Input<'a> {
                             }
                         }
                         KeyCode::Right => {
-                            let whole_text = message_len + answer.len() as u16;
+                            let whole_text = message_len + answer.chars().count() as u16;
                             let cursor_in_end_of_text = cursor_pos == whole_text;
 
                             if !cursor_in_end_of_text {
@@ -146,7 +146,7 @@ impl<'a> Input<'a> {
 
     fn insert_char(&self, ch: char, answer: &mut String) {
         let space = 1;
-        let message_len = (self.message.len() + space) as u16;
+        let message_len = (self.message.chars().count() + space) as u16;
 
         let cursor_pos = crossterm::cursor::position().unwrap().0;
 
@@ -157,7 +157,7 @@ impl<'a> Input<'a> {
 
     fn delete_char(&self, user_input: &mut String) {
         let space = 1;
-        let message_len = self.message.len() + space;
+        let message_len = self.message.chars().count() + space;
 
         let cursor_pos = crossterm::cursor::position().unwrap().0 as usize;
 
