@@ -74,7 +74,7 @@ match ans {
         "Python",
         "Haskell",
         "Lisp",
-        "HTML",
+        "Erlang",
     ];
     let ans = Select::new("What's your favorite programming language?", options).prompt();
 

@@ -11,7 +11,7 @@ fn main() {
         "Python",
         "Haskell",
         "Lisp",
-        "HTML",
+        "Erlang",
     ];
 
     let ans: Option<&str> =
