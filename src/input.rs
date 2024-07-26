@@ -152,7 +152,15 @@ impl<'a> Input<'a> {
 
         let char_before_cursor = (cursor_pos - message_len).saturating_sub(1);
 
-        answer.insert(char_before_cursor as usize, ch);
+        // UTF-8 characters take up more than 1 byte, so we need to get their position
+        // so we don't insert one character inside another
+        let char_pos = answer
+            .char_indices()
+            .nth(char_before_cursor as usize)
+            .map(|(pos, _)| pos)
+            .unwrap_or(answer.len());
+
+        answer.insert(char_pos, ch);
     }
 
     fn delete_char(&self, user_input: &mut String) {
@@ -163,6 +171,12 @@ impl<'a> Input<'a> {
 
         let char_before_cursor = cursor_pos - message_len - 1;
 
-        user_input.remove(char_before_cursor);
+        let char_pos = user_input
+            .char_indices()
+            .nth(char_before_cursor as usize)
+            .map(|(pos, _)| pos)
+            .unwrap_or(user_input.len());
+
+        user_input.remove(char_pos);
     }
 }
