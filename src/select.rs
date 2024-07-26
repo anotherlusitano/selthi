@@ -25,7 +25,7 @@ use ueberzug::{Scalers, UeConf, Ueberzug};
 /// use selthi::Select;
 ///
 /// let options: Vec<&str> = vec!["Rust", "C", "C++", "Javascript",
-///     "Java", "C#", "Python", "Haskell", "Lisp", "HTML"
+///     "Java", "C#", "Python", "Haskell", "Lisp", "Erlang"
 /// ];
 ///
 /// let ans: Option<&str> = Select::new("What's your favorite programming language?", options).prompt();
