@@ -205,46 +205,53 @@ impl<'a> Select<'a> {
 
                         self.draw_image(&ueberzug, (width, height));
                     }
-                    Event::Key(event) => match event.code {
-                        KeyCode::Up => {
-                            self.option_up(&mut stdout, &mut page);
-                            self.draw_options(&mut stdout, page);
+                    Event::Key(event) => {
+                        #[cfg(target_os = "windows")]
+                        if event.kind != KeyEventKind::Press {
+                            break;
                         }
-                        KeyCode::Char('k') => {
-                            if self.vim_mode {
+
+                        match event.code {
+                            KeyCode::Up => {
                                 self.option_up(&mut stdout, &mut page);
                                 self.draw_options(&mut stdout, page);
                             }
-                        }
-                        KeyCode::Down => {
-                            self.option_down(&mut stdout, &mut page);
-                            self.draw_options(&mut stdout, page);
-                        }
-                        KeyCode::Char('j') => {
-                            if self.vim_mode {
+                            KeyCode::Char('k') => {
+                                if self.vim_mode {
+                                    self.option_up(&mut stdout, &mut page);
+                                    self.draw_options(&mut stdout, page);
+                                }
+                            }
+                            KeyCode::Down => {
                                 self.option_down(&mut stdout, &mut page);
                                 self.draw_options(&mut stdout, page);
                             }
-                        }
-                        KeyCode::Enter => {
-                            stdout.queue(ResetColor).unwrap();
-                            stdout.queue(Show).unwrap();
-                            stdout.queue(Clear(ClearType::All)).unwrap();
-                            stdout.queue(cursor::MoveTo(0, 0)).unwrap();
-                            terminal::disable_raw_mode().unwrap();
-
-                            return Some(self.options[self.current_option]);
-                        }
-                        KeyCode::Esc => {
-                            quit = true;
-                        }
-                        KeyCode::Char(x) => {
-                            if event.modifiers.contains(KeyModifiers::CONTROL) && x == 'c' {
-                                quit = true
+                            KeyCode::Char('j') => {
+                                if self.vim_mode {
+                                    self.option_down(&mut stdout, &mut page);
+                                    self.draw_options(&mut stdout, page);
+                                }
                             }
+                            KeyCode::Enter => {
+                                stdout.queue(ResetColor).unwrap();
+                                stdout.queue(Show).unwrap();
+                                stdout.queue(Clear(ClearType::All)).unwrap();
+                                stdout.queue(cursor::MoveTo(0, 0)).unwrap();
+                                terminal::disable_raw_mode().unwrap();
+
+                                return Some(self.options[self.current_option]);
+                            }
+                            KeyCode::Esc => {
+                                quit = true;
+                            }
+                            KeyCode::Char(x) => {
+                                if event.modifiers.contains(KeyModifiers::CONTROL) && x == 'c' {
+                                    quit = true
+                                }
+                            }
+                            _ => {}
                         }
-                        _ => {}
-                    },
+                    }
 
                     _ => quit = true,
                 }

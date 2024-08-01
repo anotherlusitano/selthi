@@ -67,57 +67,64 @@ impl<'a> Input<'a> {
                 let cursor_pos = crossterm::cursor::position().unwrap().0;
 
                 match read().unwrap() {
-                    Event::Key(event) => match event.code {
-                        KeyCode::Enter => {
-                            if answer.trim().chars().count() as u16 >= self.minimum_chars {
-                                stdout.queue(ResetColor).unwrap();
-                                stdout.queue(Clear(ClearType::All)).unwrap();
-                                stdout.queue(cursor::MoveTo(0, 0)).unwrap();
-                                terminal::disable_raw_mode().unwrap();
+                    Event::Key(event) => {
+                        #[cfg(target_os = "windows")]
+                        if event.kind != KeyEventKind::Press {
+                            break;
+                        }
 
-                                return Some(answer.trim().to_string());
-                            }
-                        }
-                        KeyCode::Esc => {
-                            quit = true;
-                        }
-                        KeyCode::Left => {
-                            if cursor_pos > message_len {
-                                stdout.queue(cursor::MoveLeft(1)).unwrap();
-                            }
-                        }
-                        KeyCode::Right => {
-                            let whole_text = message_len + answer.chars().count() as u16;
-                            let cursor_in_end_of_text = cursor_pos == whole_text;
+                        match event.code {
+                            KeyCode::Enter => {
+                                if answer.trim().chars().count() as u16 >= self.minimum_chars {
+                                    stdout.queue(ResetColor).unwrap();
+                                    stdout.queue(Clear(ClearType::All)).unwrap();
+                                    stdout.queue(cursor::MoveTo(0, 0)).unwrap();
+                                    terminal::disable_raw_mode().unwrap();
 
-                            if !cursor_in_end_of_text {
+                                    return Some(answer.trim().to_string());
+                                }
+                            }
+                            KeyCode::Esc => {
+                                quit = true;
+                            }
+                            KeyCode::Left => {
+                                if cursor_pos > message_len {
+                                    stdout.queue(cursor::MoveLeft(1)).unwrap();
+                                }
+                            }
+                            KeyCode::Right => {
+                                let whole_text = message_len + answer.chars().count() as u16;
+                                let cursor_in_end_of_text = cursor_pos == whole_text;
+
+                                if !cursor_in_end_of_text {
+                                    stdout.queue(cursor::MoveRight(1)).unwrap();
+                                }
+                            }
+                            KeyCode::Backspace | KeyCode::Delete => {
+                                let cursor_in_begin_of_answer = cursor_pos == message_len;
+
+                                if !answer.is_empty() && !cursor_in_begin_of_answer {
+                                    self.delete_char(&mut answer);
+                                    stdout.queue(cursor::MoveLeft(1)).unwrap();
+                                    stdout.queue(cursor::SavePosition).unwrap();
+                                    self.draw_text(&mut stdout, &answer);
+                                    stdout.queue(cursor::RestorePosition).unwrap();
+                                }
+                            }
+                            KeyCode::Char(x) => {
+                                if event.modifiers.contains(KeyModifiers::CONTROL) && x == 'c' {
+                                    quit = true
+                                }
+
                                 stdout.queue(cursor::MoveRight(1)).unwrap();
-                            }
-                        }
-                        KeyCode::Backspace | KeyCode::Delete => {
-                            let cursor_in_begin_of_answer = cursor_pos == message_len;
-
-                            if !answer.is_empty() && !cursor_in_begin_of_answer {
-                                self.delete_char(&mut answer);
-                                stdout.queue(cursor::MoveLeft(1)).unwrap();
                                 stdout.queue(cursor::SavePosition).unwrap();
+                                self.insert_char(x, &mut answer);
                                 self.draw_text(&mut stdout, &answer);
                                 stdout.queue(cursor::RestorePosition).unwrap();
                             }
+                            _ => {}
                         }
-                        KeyCode::Char(x) => {
-                            if event.modifiers.contains(KeyModifiers::CONTROL) && x == 'c' {
-                                quit = true
-                            }
-
-                            stdout.queue(cursor::MoveRight(1)).unwrap();
-                            stdout.queue(cursor::SavePosition).unwrap();
-                            self.insert_char(x, &mut answer);
-                            self.draw_text(&mut stdout, &answer);
-                            stdout.queue(cursor::RestorePosition).unwrap();
-                        }
-                        _ => {}
-                    },
+                    }
 
                     _ => quit = true,
                 }
