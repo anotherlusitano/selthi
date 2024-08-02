@@ -160,6 +160,10 @@ impl<'a> Input<'a> {
 
         let cursor_pos = crossterm::cursor::position().unwrap().0;
 
+        #[cfg(target_os = "windows")]
+        let char_before_cursor = cursor_pos - message_len;
+
+        #[cfg(not(target_os = "windows"))]
         let char_before_cursor = (cursor_pos - message_len).saturating_sub(1);
 
         // UTF-8 characters take up more than 1 byte, so we need to get their position
