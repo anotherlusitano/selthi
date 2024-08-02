@@ -1,6 +1,6 @@
 [package]
 name = "selthi"
-version = "0.2.6"
+version = "0.2.7"
 edition = "2021"
 author = "João Ribeiro"
 repository = "https://github.com/anotherlusitano/selthi"
