@@ -6,6 +6,8 @@ use std::{
     time::Duration,
 };
 
+#[cfg(target_os = "windows")]
+use crossterm::event::KeyEventKind;
 use crossterm::{
     cursor::{self, Hide, SetCursorStyle, Show},
     event::{poll, read, Event, KeyCode, KeyModifiers},
