@@ -198,12 +198,14 @@ impl<'a> Select<'a> {
         while !quit {
             while poll(Duration::ZERO).unwrap() {
                 match read().unwrap() {
-                    #[cfg(feature = "with_images")]
-                    Event::Resize(nw, nh) => {
-                        width = nw;
-                        height = nh;
+                    Event::Resize(_nw, _nh) => {
+                        #[cfg(feature = "with_images")]
+                        {
+                            width = _nw;
+                            height = _nh;
 
-                        self.draw_image(&ueberzug, (width, height));
+                            self.draw_image(&ueberzug, (width, height));
+                        }
                     }
                     Event::Key(event) => {
                         #[cfg(target_os = "windows")]
@@ -254,6 +256,7 @@ impl<'a> Select<'a> {
                     }
                     Event::FocusLost => (),
                     Event::FocusGained => (),
+                    Event::Mouse(_) => (),
                     _ => quit = true,
                 }
                 #[cfg(feature = "with_images")]
