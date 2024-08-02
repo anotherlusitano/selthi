@@ -125,7 +125,8 @@ impl<'a> Input<'a> {
                             _ => {}
                         }
                     }
-
+                    Event::FocusLost => (),
+                    Event::FocusGained => (),
                     _ => quit = true,
                 }
             }

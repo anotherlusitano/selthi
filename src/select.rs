@@ -252,7 +252,8 @@ impl<'a> Select<'a> {
                             _ => {}
                         }
                     }
-
+                    Event::FocusLost => (),
+                    Event::FocusGained => (),
                     _ => quit = true,
                 }
                 #[cfg(feature = "with_images")]
